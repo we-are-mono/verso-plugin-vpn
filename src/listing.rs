@@ -99,8 +99,8 @@ fn columns() -> Vec<TableColumn> {
         ("Kind", "text", ColumnWidth::Name),
         ("Server", "mono", ColumnWidth::Address),
         ("Address", "mono", ColumnWidth::Address),
-        ("State", "status", ColumnWidth::Word),
         ("Traffic", "runtime", ColumnWidth::Grow),
+        ("State", "status", ColumnWidth::Word),
         ("", "actions", ColumnWidth::Short),
     ]
     .into_iter()
@@ -158,12 +158,12 @@ fn instance_row(instance: &Instance, drawer: Option<RowDrawer>) -> TableRow {
             text_cell(kind),
             mono_cell(&server),
             mono_cell(&instance.live.address),
+            traffic_cell(instance.traffic.as_ref()),
             TableCell {
                 text: state.into(),
                 variant: variant.into(),
                 ..Default::default()
             },
-            traffic_cell(instance.traffic.as_ref()),
             TableCell {
                 actions: vec![
                     TableRowAct {
@@ -224,12 +224,12 @@ fn tunnel_row(tunnel: &Tunnel) -> TableRow {
             text_cell(kind),
             mono_cell(""),
             mono_cell(&tunnel.address),
+            traffic_cell(Some(&tunnel.traffic)),
             TableCell {
                 text: state.into(),
                 variant: variant.into(),
                 ..Default::default()
             },
-            traffic_cell(Some(&tunnel.traffic)),
             TableCell::default(),
         ],
         ..Default::default()
@@ -343,8 +343,9 @@ mod tests {
         assert_eq!(cells[1]["text"], "OpenVPN client");
         assert_eq!(cells[2]["text"], "185.107.56.234:1194");
         assert_eq!(cells[3]["text"], "10.96.0.14/16");
-        assert_eq!(cells[4], json!({"text": "connected", "variant": "success"}));
-        assert_eq!(cells[5]["text"], "↓ 1.2 GB · ↑ 182.0 MB");
+        // The state reads last, beside the acts it explains.
+        assert_eq!(cells[4]["text"], "↓ 1.2 GB · ↑ 182.0 MB");
+        assert_eq!(cells[5], json!({"text": "connected", "variant": "success"}));
         assert_eq!(proton["panel"], "/plugins/vpn/?open=proton");
         for cell in cells.as_array().unwrap() {
             assert!(
@@ -359,7 +360,7 @@ mod tests {
         let work = &rows(&body())[1];
         assert_eq!(work["muted"], true);
         assert_eq!(work["cells"][2]["text"], "vpn.example.com:443");
-        assert_eq!(work["cells"][4]["text"], "off");
+        assert_eq!(work["cells"][5]["text"], "off");
         let power = &work["cells"][6]["actions"][0];
         assert_eq!(power["name"], "work");
         assert_eq!(power["value"], "on");
