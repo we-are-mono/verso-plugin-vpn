@@ -21,7 +21,7 @@ const DASH: &str = "—";
 /// two ways in the page's act offers.
 const FIRST_TEXT: &str = "No VPN yet. Add one from the profile your provider offers for routers, \
      or from a server's details.";
-const ADD_LABEL: &str = add::TITLE;
+const ADD_LABEL: &str = "Add VPN";
 
 /// UNREAD_TITLE and UNREAD_BODY are the page when the router's tunnels could
 /// not be read, which is not the same as there being none.

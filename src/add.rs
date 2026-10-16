@@ -26,7 +26,7 @@ pub const NEW: &str = "new";
 /// ADD marks a submission as that panel's own.
 pub const ADD: &str = "add";
 
-pub const TITLE: &str = "Add a VPN";
+pub const TITLE: &str = "New VPN";
 const WAY_LABEL: &str = "Set it up from";
 const FILE: &str = "file";
 const DETAILS: &str = "details";
@@ -400,7 +400,7 @@ pub fn drawer(vpn: &Vpn, draft: &Draft, errors: &Errors) -> RowDrawer {
         open: true,
         children: vec![Widget::Form {
             style: String::new(),
-            submit: "Add".into(),
+            submit: "Save VPN".into(),
             error: String::new(),
             fields,
             note: String::new(),

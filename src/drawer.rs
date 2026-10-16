@@ -160,7 +160,7 @@ pub fn drawer(instance: &Instance, now: u64, stated: &Stated, errors: &Errors) -
         closed: "/plugins/vpn/".into(),
         tabs: tabs(instance, SETTINGS),
         open: true,
-        children: vec![Widget::form("Save", fields).at(CONFIG, &instance.name)],
+        children: vec![Widget::form("Save VPN", fields).at(CONFIG, &instance.name)],
         ..Default::default()
     }
 }
@@ -468,7 +468,7 @@ mod tests {
         let panel = panel("proton");
         // One form, so Save closes the panel under everything it saves.
         assert_eq!(panel["children"].as_array().unwrap().len(), 1);
-        assert_eq!(panel["children"][0]["submit"], "Save");
+        assert_eq!(panel["children"][0]["submit"], "Save VPN");
         let fields = fields(&panel);
         assert_eq!(fields[1]["key"], "enabled");
         assert_eq!(fields[1]["on"], true);
