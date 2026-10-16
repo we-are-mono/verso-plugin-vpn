@@ -34,6 +34,11 @@ fn main() {
 }
 
 fn get(request: &Request) -> Envelope {
+    // The plugin is one page, at its own address: a tunnel opens beside it by
+    // query. Any path below it has nothing at it.
+    if !request.path.trim_matches('/').is_empty() {
+        return Envelope::not_found();
+    }
     let vpn = Vpn::read(request);
     let open = request.query.get(listing::OPEN);
     if open == add::NEW {
@@ -57,6 +62,9 @@ fn get(request: &Request) -> Envelope {
 /// missing, and in either case drawn again from what was typed, which is what
 /// keeps its preview current while it is edited — or a row's start or stop.
 fn post(request: &Request, form: &Form) -> Envelope {
+    if !request.path.trim_matches('/').is_empty() {
+        return Envelope::not_found();
+    }
     let vpn = Vpn::read(request);
     let open = request.query.get(listing::OPEN);
     // The import panel is drawn again around a chosen file (the shell's
@@ -122,6 +130,19 @@ fn now() -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The plugin is one page, at its own address; any other path has nothing
+    /// at it and says so, rather than passing for that page.
+    #[test]
+    fn a_path_below_the_page_has_nothing_at_it() {
+        for path in ["/nowhere", "/proton"] {
+            assert!(get(&fixture::request(path)).not_found, "{path}");
+            assert!(post(&fixture::request(path), &Form::default()).not_found, "{path}");
+        }
+        for path in ["", "/", "/?open=proton"] {
+            assert!(!get(&fixture::request(path)).not_found, "{path}");
+        }
+    }
 
     #[test]
     fn an_address_naming_an_instance_opens_its_panel_on_the_listing() {
