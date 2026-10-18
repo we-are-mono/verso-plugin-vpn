@@ -14,6 +14,9 @@ pub const CONFIG: &str = "openvpn";
 pub const STATE: &str = "vpn.state";
 pub const FILES: &str = "configFiles";
 
+/// FAMILY is this plugin's file family among those handed over: the profiles.
+const FAMILY: &str = "openvpn";
+
 /// SAMPLES are the sections OpenWrt's openvpn package ships, each switched
 /// off: examples of the config's shape, not anything this router runs. One is
 /// listed only once someone turns it on.
@@ -155,9 +158,9 @@ impl Vpn {
                 .get(FILES)
                 .and_then(|s| s["files"].as_array())
                 .and_then(|files| {
-                    files
-                        .iter()
-                        .find(|f| !config.is_empty() && f["path"] == config.as_str())
+                    files.iter().find(|f| {
+                        !config.is_empty() && f["family"] == FAMILY && f["path"] == config.as_str()
+                    })
                 })
                 .filter(|f| f.get("error").is_none())
                 .map(|f| ProfileFile {
@@ -228,6 +231,7 @@ impl Vpn {
                 .and_then(|s| s["files"].as_array())
                 .into_iter()
                 .flatten()
+                .filter(|f| f["family"] == FAMILY)
                 .filter_map(|f| f["path"].as_str())
                 .filter_map(|p| p.rsplit('/').next())
                 .filter_map(|f| f.split('.').next())

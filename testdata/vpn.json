@@ -100,8 +100,19 @@
     ]
   }},
   "configFiles": {
-    "families": [{"name": "openvpn", "config": "openvpn", "plugin": "vpn"}],
+    "families": [
+      {"name": "openvpn", "config": "openvpn", "plugin": "vpn"},
+      {"name": "fw4", "config": "firewall", "plugin": "firewall"}
+    ],
     "files": [
+      {
+        "path": "/etc/nftables.d/10-custom.nft",
+        "family": "fw4",
+        "content": "chain x {}\n",
+        "version": "0c4e1f2a9b8d7e6f",
+        "pending": false,
+        "exists": true
+      },
       {
         "path": "/etc/openvpn/proton.ovpn",
         "family": "openvpn",

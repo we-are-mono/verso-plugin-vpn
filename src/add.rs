@@ -826,6 +826,19 @@ mod tests {
         Vpn::read(&fixture::request("/"))
     }
 
+    // The shell hands this plugin the firewall's rule files too, since it
+    // reads the firewall config; only a profile's name is taken by a file.
+    #[test]
+    fn only_a_profile_takes_a_name() {
+        let vpn = vpn();
+        assert!(vpn.taken.iter().any(|t| t == "proton"), "{:?}", vpn.taken);
+        assert!(
+            !vpn.taken.iter().any(|t| t == "10-custom"),
+            "{:?}",
+            vpn.taken
+        );
+    }
+
     fn from_file(text: &str) -> Draft {
         Draft {
             text: text.into(),
