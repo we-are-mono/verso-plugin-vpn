@@ -389,8 +389,9 @@ mod tests {
     #[test]
     fn a_router_with_no_tunnels_opens_on_how_to_make_the_first() {
         let mut request = fixture::empty("/");
-        request.ubus =
-            verso_plugin::Ubus::from_value(json!({"vpnState": {"instances": {}, "tunnels": []}}));
+        request.ubus = verso_plugin::Ubus::from_value(
+            json!({"vpn.state": {"version": 1, "result": {"instances": {}, "tunnels": []}}}),
+        );
         let body = serde_json::to_value(page(&Vpn::read(&request), None)).unwrap();
         // The listing with nothing in it, saying so where its first row would
         // stand, as every listing does.
@@ -418,8 +419,9 @@ mod tests {
             "fresh": {".type": "openvpn", ".name": "fresh", ".index": 0, "enabled": "1",
                 "config": "/etc/openvpn/fresh.ovpn"}
         }}));
-        request.ubus =
-            verso_plugin::Ubus::from_value(json!({"vpnState": {"instances": {}, "tunnels": []}}));
+        request.ubus = verso_plugin::Ubus::from_value(
+            json!({"vpn.state": {"version": 1, "result": {"instances": {}, "tunnels": []}}}),
+        );
         let vpn = Vpn::read(&request);
         assert_eq!(instance_state(&vpn.instances[0]), ("not applied yet", ""));
     }

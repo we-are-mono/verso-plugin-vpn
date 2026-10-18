@@ -11,8 +11,11 @@ NAME        := verso-plugin-$(ID)
 DESCRIPTION := Verso VPN — every tunnel on the router, and OpenVPN profiles read out
 # It lists every tunnel whatever runs it, and edits OpenVPN's, so it depends on
 # `openvpn`: the name every OpenVPN build provides (openssl, mbedtls), so a
-# router keeps the one it has.
-DEPENDS     := verso openvpn
+# router keeps the one it has. Its root half runs through the command registry
+# and the file families declared by plugins, which verso has since 0.9.0-r53.
+# It takes the OpenVPN hotplug hook over from the verso that shipped it, so it
+# replaces verso for that one file.
+DEPENDS     := verso>=0.9.0-r53 openvpn
 
 CARGO    ?= $(if $(wildcard $(HOME)/.cargo/bin/cargo),$(HOME)/.cargo/bin/cargo,cargo)
 BUILDDIR := build
@@ -96,6 +99,7 @@ apk: apk-preflight build-$(APK_GOARCH)
 	  --info license:GPL-2.0-only --info url:https://github.com/we-are-mono/$(NAME) \
 	  --info origin:$(NAME) \
 	  --info "depends:$(DEPENDS)" \
+	  --info "replaces:verso" \
 	  --files "$(APK_PAYLOAD)" \
 	  --script post-install:$(POSTINST) \
 	  --script post-upgrade:$(POSTINST) \

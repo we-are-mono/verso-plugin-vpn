@@ -5,7 +5,7 @@
 //! client connected on tun0, a work profile switched off, the package's own
 //! samples left as shipped, and Tailscale running beside them.
 
-use verso_plugin::{Form, Request, Snapshot, Ubus};
+use verso_plugin::{Form, Plugins, Request, Snapshot, Ubus};
 
 const SNAPSHOT: &str = include_str!("../testdata/snapshot.json");
 const STATE: &str = include_str!("../testdata/vpn.json");
@@ -18,6 +18,7 @@ pub fn request(path: &str) -> Request {
         query: Form::parse(query),
         snapshot: Snapshot::from_value(serde_json::from_str(SNAPSHOT).expect("snapshot fixture")),
         ubus: Ubus::from_value(serde_json::from_str(STATE).expect("state fixture")),
+        plugins: Plugins::default(),
     }
 }
 
@@ -28,5 +29,6 @@ pub fn empty(path: &str) -> Request {
         query: Form::default(),
         snapshot: Snapshot::from_value(serde_json::json!({})),
         ubus: Ubus::from_value(serde_json::json!({})),
+        plugins: Plugins::default(),
     }
 }

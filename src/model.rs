@@ -9,6 +9,11 @@ use verso_plugin::{Map, Request, Value};
 
 pub const CONFIG: &str = "openvpn";
 
+/// The brokered reads a page is answered from: this plugin's own `state`
+/// (ADR-027), and the files of the families whose config it reads.
+pub const STATE: &str = "vpn.state";
+pub const FILES: &str = "configFiles";
+
 /// SAMPLES are the sections OpenWrt's openvpn package ships, each switched
 /// off: examples of the config's shape, not anything this router runs. One is
 /// listed only once someone turns it on.
@@ -102,7 +107,7 @@ pub struct Tunnel {
 
 impl Vpn {
     pub fn read(request: &Request) -> Vpn {
-        let state = request.ubus.get("vpnState");
+        let state = request.ubus.read(STATE, &[crate::root::STATE_VERSION]);
         let tunnels: Vec<&Value> = state
             .and_then(|s| s["tunnels"].as_array())
             .map(|t| t.iter().collect())
@@ -147,7 +152,7 @@ impl Vpn {
             let config = section.scalar("config");
             let file = request
                 .ubus
-                .get("openvpnFiles")
+                .get(FILES)
                 .and_then(|s| s["files"].as_array())
                 .and_then(|files| {
                     files
@@ -219,7 +224,7 @@ impl Vpn {
         taken.extend(
             request
                 .ubus
-                .get("openvpnFiles")
+                .get(FILES)
                 .and_then(|s| s["files"].as_array())
                 .into_iter()
                 .flatten()

@@ -11,8 +11,8 @@
       { "scope": "uci", "object": "openvpn", "function": "read" },
       { "scope": "uci", "object": "network", "function": "read" },
       { "scope": "uci", "object": "firewall", "function": "read" },
-      { "scope": "ubus", "object": "verso", "function": "vpnState" },
-      { "scope": "ubus", "object": "verso", "function": "openvpnFiles" }
+      { "scope": "verso-plugin", "object": "vpn", "function": "state" },
+      { "scope": "ubus", "object": "verso", "function": "configFiles" }
     ],
     "write": [
       { "scope": "uci", "object": "openvpn", "function": "write" },

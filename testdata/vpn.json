@@ -1,5 +1,5 @@
 {
-  "vpnState": {
+  "vpn.state": {"version": 1, "result": {
     "instances": {
       "proton": {
         "config": "/etc/openvpn/proton.ovpn",
@@ -98,8 +98,9 @@
         ]
       }
     ]
-  },
-  "openvpnFiles": {
+  }},
+  "configFiles": {
+    "families": [{"name": "openvpn", "config": "openvpn", "plugin": "vpn"}],
     "files": [
       {
         "path": "/etc/openvpn/proton.ovpn",

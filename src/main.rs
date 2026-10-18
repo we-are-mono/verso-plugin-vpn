@@ -9,9 +9,9 @@
 //! one — so the page reads it out and changes only what the section says.
 //!
 //! Every request is answered from the reads the shell brokers with it
-//! (ADR-007): the uci configs, and the helper's `vpnState`, which reads the
-//! profiles, the processes and their logs, so the plugin reaches nothing
-//! itself.
+//! (ADR-007): the uci configs, the `openvpn` family's files, and this
+//! plugin's own `state` read, which its root half answers as root (ADR-027):
+//! the profiles, the processes and what OpenVPN reported through its hooks.
 
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -22,6 +22,8 @@ mod describe;
 mod drawer;
 mod listing;
 mod model;
+mod openvpn;
+mod root;
 
 #[cfg(test)]
 mod fixture;
@@ -30,6 +32,9 @@ use drawer::Stated;
 use model::Vpn;
 
 fn main() {
+    if std::env::args().nth(1).as_deref() == Some("root") {
+        root::run();
+    }
     serve_described("vpn", get, post, describe::describe);
 }
 

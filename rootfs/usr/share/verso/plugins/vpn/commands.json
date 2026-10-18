@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "commands": [
+    { "name": "state", "kind": "read", "version": 1,
+      "exec": "/usr/bin/verso-plugin-vpn", "argv": ["root"] },
+    { "name": "files", "kind": "transform",
+      "exec": "/usr/bin/verso-plugin-vpn", "argv": ["root"] }
+  ],
+  "families": [
+    {
+      "name": "openvpn",
+      "config": "openvpn",
+      "dir": { "path": "/etc/openvpn", "suffixes": [".ovpn", ".conf"], "names": "dotted" },
+      "mode": "0600",
+      "words": {
+        "too_large": "Profiles must be at most 32 KiB.",
+        "invalid": "Invalid profile.",
+        "over_limit": "Profiles exceed the editor size limit."
+      },
+      "reload": ["/etc/init.d/openvpn", "reload"],
+      "transform": "files"
+    }
+  ]
+}
