@@ -721,7 +721,7 @@ fn validate(vpn: &Vpn, draft: &Draft) -> Errors {
         } else if draft.text.len() > LIMIT || draft.text.contains('\0') {
             errors.field(
                 "profile",
-                "That file is larger than 32 KiB, so it isn’t a profile this router can use.",
+                "That file is larger than 32\u{202f}KiB, so it isn’t a profile this router can use.",
             );
         } else if read.remotes.is_empty() {
             errors.field("profile", "This profile names no server to connect to.");

@@ -253,7 +253,7 @@ pub fn save_profile(instance: &Instance, form: &Form) -> Result<ApplyAction, Box
 }
 
 const LIMIT: usize = 32768;
-const TOO_LARGE: &str = "Profiles must be at most 32 KiB.";
+const TOO_LARGE: &str = "Profiles must be at most 32\u{202f}KiB.";
 
 /// facts is what the tunnel is doing now, as far as the helper could read,
 /// beyond the state its row already says.
@@ -261,7 +261,12 @@ fn facts(instance: &Instance, now: u64) -> Vec<Property> {
     let mut out = Vec::new();
     if let (true, Some(since)) = (instance.enabled, instance.live.since) {
         if instance.live.state == "connected" && now >= since {
-            out.push(verbatim("Connected for", &duration(now - since)));
+            // The shell writes how long, as it writes every duration.
+            out.push(Property {
+                label: "Connected for".into(),
+                duration: Some(now - since),
+                ..Default::default()
+            });
         }
     }
     if !instance.live.server.is_empty() {
@@ -389,17 +394,6 @@ fn words(label: &str, value: &str) -> Property {
     }
 }
 
-/// duration is a stretch of time the way a person says it, to its two
-/// largest units.
-pub fn duration(seconds: u64) -> String {
-    let (d, h, m) = (seconds / 86400, seconds % 86400 / 3600, seconds % 3600 / 60);
-    match (d, h) {
-        (0, 0) => format!("{} min", m.max(1)),
-        (0, _) => format!("{h} h {m} min"),
-        _ => format!("{d} d {h} h"),
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -456,7 +450,10 @@ mod tests {
             .unwrap()
             .iter()
             .all(|p| p["label"] != "State"));
-        assert_eq!(property(facts, "Connected for")["value"], "3 h 12 min");
+        // How long is a number the shell writes, as it writes every duration.
+        let connected = property(facts, "Connected for");
+        assert_eq!(connected["duration"], 3 * 3600 + 12 * 60);
+        assert!(connected.get("value").is_none_or(|v| v == ""));
         assert_eq!(property(facts, "Server")["value"], "185.107.56.234:1194");
         assert_eq!(property(facts, "Tunnel address")["value"], "10.96.0.14/16");
         assert_eq!(property(facts, "Device")["value"], "tun0");
@@ -651,12 +648,5 @@ mod tests {
             panic!("a password with no username was saved");
         };
         assert!(!errors.get("username").is_empty());
-    }
-
-    #[test]
-    fn durations_read_the_way_a_person_says_them() {
-        assert_eq!(duration(30), "1 min");
-        assert_eq!(duration(3 * 3600 + 12 * 60), "3 h 12 min");
-        assert_eq!(duration(2 * 86400 + 6 * 3600), "2 d 6 h");
     }
 }

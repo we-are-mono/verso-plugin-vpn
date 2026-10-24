@@ -13,7 +13,7 @@
       "dir": { "path": "/etc/openvpn", "suffixes": [".ovpn", ".conf"], "names": "dotted" },
       "mode": "0600",
       "words": {
-        "too_large": "Profiles must be at most 32 KiB.",
+        "too_large": "Profiles must be at most 32 KiB.",
         "invalid": "Invalid profile.",
         "over_limit": "Profiles exceed the editor size limit."
       },
